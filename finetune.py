@@ -18,6 +18,38 @@ class Lora_finetune:
         self.max_target_length = 512
         self.source_prefix = ''
 
+    #no history处理
+    def preprocess_no_history(self, examples):
+        max_seq_length = self.max_source_length + self.max_target_length
+        model_inputs = {
+            "input_ids": [],
+            "labels": [],
+        }
+        for i in range(len(examples['key'])):
+            if examples['key'][i] and examples['value'][i]:
+                query, answer = examples['key'][i], examples['value'][i]
+
+                history = []
+                #prompt = self.tokenizer.build_prompt(query, history)
+
+                prompt = query
+                a_ids = self.tokenizer.encode(text=prompt, add_special_tokens=True, truncation=True,
+                                              max_length=self.max_source_length)
+                b_ids = self.tokenizer.encode(text=answer, add_special_tokens=False, truncation=True,
+                                              max_length=self.max_target_length)
+
+                context_length = len(a_ids)
+                input_ids = a_ids + b_ids + [self.tokenizer.eos_token_id]
+                labels = [self.tokenizer.pad_token_id] * context_length + b_ids + [self.tokenizer.eos_token_id]
+
+                pad_len = max_seq_length - len(input_ids)
+                input_ids = input_ids + [self.tokenizer.pad_token_id] * pad_len
+                labels = labels + [self.tokenizer.pad_token_id] * pad_len
+                labels = [(l if l != self.tokenizer.pad_token_id else -100) for l in labels]
+                model_inputs["input_ids"].append(input_ids)
+                model_inputs["labels"].append(labels)
+        return model_inputs
+
     # history处理
     def preprocess(self,examples):
         max_seq_length = self.max_source_length + self.max_target_length
