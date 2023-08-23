@@ -25,9 +25,9 @@ class Lora_finetune:
             "input_ids": [],
             "labels": [],
         }
-        for i in range(len(examples['key'])):
-            if examples['key'][i] and examples['value'][i]:
-                query, answer = examples['key'][i], examples['value'][i]
+        for i in range(len(examples['query'])):
+            if examples['query'][i] and examples['value'][i]:
+                query, answer = examples['query'][i], examples['value'][i]
 
                 history = []
                 #prompt = self.tokenizer.build_prompt(query, history)
@@ -57,9 +57,9 @@ class Lora_finetune:
             "input_ids": [],
             "labels": [],
         }
-        for i in range(len(examples['key'])):
-            if examples['key'][i] and examples['value'][i]:
-                query, answer = examples['key'][i], examples['value'][i]
+        for i in range(len(examples['query'])):
+            if examples['query'][i] and examples['value'][i]:
+                query, answer = examples['query'][i], examples['value'][i]
 
                 history = examples['history'][i]
                 prompt = self.tokenizer.build_prompt(query, history)
@@ -99,7 +99,7 @@ class Lora_finetune:
             r=8,
             lora_alpha=32,
             lora_dropout=0.1,
-            target_modules=["key","value"]
+            target_modules=["query","value"]
         )
 
         peft_model = get_peft_model(self.model,peft_config)
