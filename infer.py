@@ -117,10 +117,10 @@ def make_dataset(dialogs):
         new_history = []
         for i,(input,response) in enumerate(dialogs):
             data_dict = {}
-            data_dict['key'] = input
+            data_dict['query'] = input
             data_dict['value'] = response
             data_dict['history'] = new_history.copy()
-            new_history.append((data_dict['key'],data_dict['value']))
+            new_history.append((data_dict['query'],data_dict['value']))
             data_list.append(data_dict)
         print(data_list)
         f.write(json.dumps(data_list,ensure_ascii=False))
@@ -134,27 +134,27 @@ def make_dataset_SWAP(dialogs):
         for i,(input,response) in enumerate(dialogs):
             data_dict = {}
             if i == 0:
-                data_dict['key'] = "AI正在等待用户提问。"
+                data_dict['query'] = "AI正在等待用户提问。"
                 data_dict['value'] = "用户："+ input
                 data_dict['history'] = []
-                new_history.append((data_dict['key'],data_dict['value']))
+                new_history.append((data_dict['query'],data_dict['value']))
                 data_list.append(data_dict)
                 temp_response = response
             elif i != len(dialogs)-1:
-                data_dict['key'] = "AI："+temp_response
+                data_dict['query'] = "AI："+temp_response
                 data_dict['value'] = "用户："+input
                 data_dict['history'] = new_history.copy()
-                new_history.append((data_dict['key'],data_dict['value']))
+                new_history.append((data_dict['query'],data_dict['value']))
                 data_list.append(data_dict)
                 temp_response = response
             else:
-                data_dict['key'] = "AI："+temp_response
+                data_dict['query'] = "AI："+temp_response
                 data_dict['value'] = "用户："+input
                 data_dict['history'] = new_history.copy()
-                new_history.append((data_dict['key'],data_dict['value']))
+                new_history.append((data_dict['query'],data_dict['value']))
                 data_list.append(data_dict)
                 data_dict_final = {}
-                data_dict_final['key'] = "AI："+response
+                data_dict_final['query'] = "AI："+response
                 data_dict_final['value'] = "对话已终止。"
                 data_dict_final['history'] = new_history.copy()
                 data_list.append(data_dict_final)
