@@ -91,6 +91,7 @@ def save(input,response):
         else:
             lora = Lora_finetune(args.last,time)
         flag += 1
+        del model
         sub_process = multiprocessing.Process(target=lora.train())
         sub_process.start()
         sub_process.join()
