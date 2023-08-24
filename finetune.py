@@ -112,7 +112,7 @@ class Lora_finetune:
                 gradient_accumulation_steps=4,
                 warmup_steps=5,
                 max_steps=50,
-                learning_rate=5e-5,
+                learning_rate=5e-3,
                 logging_steps=1,
                 output_dir='outputs'
             ),
