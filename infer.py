@@ -10,7 +10,9 @@ from datetime import datetime
 import json
 import multiprocessing
 from finetune import Lora_finetune
-
+import os
+if not os.path.exists('datas'):
+    os.mkdir('datas')
 
 parser = ArgumentParser()
 
@@ -86,12 +88,13 @@ def save(input,response):
     if lifes == args.max_lifes + 1:
         dialogs = dialogs[:-1]
         time = make_dataset(dialogs)
+        del model
+        torch.cuda.empty_cache()
         if not flag:
             lora = Lora_finetune(args.init,time)
         else:
             lora = Lora_finetune(args.last,time)
         flag += 1
-        del model
         sub_process = multiprocessing.Process(target=lora.train())
         sub_process.start()
         sub_process.join()
