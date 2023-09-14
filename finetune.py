@@ -7,7 +7,15 @@ import os
 from peft import PeftModel
 from peft import get_peft_model,LoraConfig,TaskType
 from transformers import Trainer, TrainingArguments, DataCollatorForSeq2Seq
+import shutil
 os.environ["WANDB_DISABLED"] = 'true'
+
+def copy(source_path, destination_path):
+    try:
+        shutil.copy(source_path, destination_path)
+    except Exception as e:
+        print(f"复制文件时出错：{str(e)}")
+
 class Lora_finetune:
     def __init__(self,last_name,timestamp):
         self.last_name = last_name
@@ -99,7 +107,7 @@ class Lora_finetune:
             r=8,
             lora_alpha=32,
             lora_dropout=0.1,
-            target_modules=["query","value"]
+            target_modules=["query_key_value"]
         )
 
         peft_model = get_peft_model(self.model,peft_config)
@@ -133,11 +141,18 @@ class Lora_finetune:
         peft_loaded = PeftModel.from_pretrained(model_old,ckpt_path)
         model_new = peft_loaded.merge_and_unload()
 
+        if self.last_name != "THUDM/chatglm2-6b" and self.last_name !='chatglm2-update':
+            paths = os.listdir(self.last_name)
+            for path in paths:
+                if ".py" in path:
+                    copy(os.path.join(self.last_name,path),os.path.join(save_path,path))
 
         save_path = 'chatglm2-update'
         model_new.save_pretrained(save_path,max_shard_size = '2GB')
         self.tokenizer.save_pretrained(save_path)
         print('lora end')
+        del self.model
+        torch.cuda.empty_cache()
 
 # if __name__ == '__main__':
 #     lora = Lora_finetune('THUDM/chatglm2-6b','2023-08-21-20-15-11')
