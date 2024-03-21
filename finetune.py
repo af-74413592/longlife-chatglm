@@ -90,7 +90,7 @@ class Lora_finetune:
                 model_inputs["labels"].append(labels)
         return model_inputs
 
-    def train(self):
+    def train(self,max_steps=50):
         print("lora start")
         ds_train_raw = load_dataset("json",data_files=os.path.join('datas',self.timestamp+'.json'))['train']
 
@@ -119,7 +119,7 @@ class Lora_finetune:
                 per_device_eval_batch_size=1,
                 gradient_accumulation_steps=4,
                 warmup_steps=5,
-                max_steps=50,
+                max_steps=max_steps,
                 learning_rate=5e-3,
                 logging_steps=1,
                 output_dir='outputs'
