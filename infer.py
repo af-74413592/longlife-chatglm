@@ -19,6 +19,7 @@ parser = ArgumentParser()
 parser.add_argument('--init',type=str,default="THUDM/chatglm2-6b")
 parser.add_argument('--last',type=str,default="chatglm2-update")
 parser.add_argument('--max_lifes',type=int,default=3)
+parser.add_argument('--max_steps',type=int,default=3)
 args = parser.parse_args()
 
 lifes = 0
@@ -95,7 +96,7 @@ def save(input,response):
         else:
             lora = Lora_finetune(args.last,time)
         flag += 1
-        sub_process = multiprocessing.Process(target=lora.train())
+        sub_process = multiprocessing.Process(target=lora.train(args.max_steps))
         sub_process.start()
         sub_process.join()
         lifes = 0
@@ -176,7 +177,7 @@ def predict(input, chatbot, max_length, top_p, temperature, history):
         yield chatbot, history
         save(input,'我困了，想要休息一会。')
     else:
-        print(model)
+        #print(model)
         for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
                                                 temperature=temperature):
             chatbot[-1] = (parse_text(input), parse_text(response))       
